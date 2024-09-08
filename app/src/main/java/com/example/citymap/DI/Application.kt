@@ -1,4 +1,4 @@
-package com.example.interrapidisimo.di
+package com.example.citymap
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

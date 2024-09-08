@@ -1,4 +1,4 @@
-package com.example.interrapidisimo.di
+package com.example.citymap.di
 
 import android.content.Context
 import androidx.room.Room
