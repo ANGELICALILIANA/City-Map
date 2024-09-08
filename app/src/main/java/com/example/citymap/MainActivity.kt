@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,8 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
+import com.example.citymap.VO.LocationDatabaseVO
 import com.example.citymap.database.AppDatabase
 import com.example.citymap.database.entity.LocationEntity
 import com.example.citymap.ViewModel.WeatherViewModel
@@ -86,11 +89,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         setupSearchView()
         setupAutoComplete()
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        initObservers()
+    }
+
+    private fun initObservers() {
+        weatherViewModel.locationDatabaseVO.observe(this, Observer {
+            val location = it
+            if (location != null) {
+                val latLng = LatLng(location.latitude, location.longitude)
+                    map.clear()
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
+                    map.addMarker(MarkerOptions().position(latLng).title(location.name))
+
+            } else {
+                Toast.makeText(this, "Ubicación no encontrada en caché", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun setupAutoComplete() {
@@ -104,18 +118,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             hideKeyboard()
         }
 
-        // Evento de clic en el AutoCompleteTextView
         autoCompleteTextView.setOnClickListener {
-            // Si ya se seleccionó una opción, borrar el texto
             if (isOptionSelected) {
                 autoCompleteTextView.text.clear()
-                isOptionSelected = false // Restablecer la selección
+                isOptionSelected = false
             }
         }
     }
 
     private fun setupSearchView() {
-        val token = AutocompleteSessionToken.newInstance()
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -124,25 +135,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                /*if (newText != null && newText.length > 2) {
-                    val request = FindAutocompletePredictionsRequest.builder()
-                        .setSessionToken(token)
-                        .setQuery(newText)
-                        .build()
-
-                    placesClient.findAutocompletePredictions(request)
-                        .addOnSuccessListener { response ->
-                            for (prediction in response.autocompletePredictions) {
-                                // Aquí puedes mostrar las sugerencias de autocompletado
-                                Log.i("Autocomplete", prediction.getFullText(null).toString())
-                            }
-                        }
-                        .addOnFailureListener { exception ->
-                            Log.e("Autocomplete", "Error obteniendo predicciones: ", exception)
-                        }
-                }
-
-                 */
                 return false
             }
         })
@@ -152,61 +144,29 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun searchLocation(city: String) {
         if (isInternetAvailable()) {
             val geocoder = Geocoder(this, Locale.getDefault())
-            CoroutineScope(Dispatchers.IO).launch {
-
                 try {
                     val addressList = geocoder.getFromLocationName(city, 1)
                     if (addressList != null && addressList.isNotEmpty()) {
                         val address = addressList[0]
                         val latLng = LatLng(address.latitude, address.longitude)
 
-                        val location = LocationEntity(name = city, latitude = address.latitude, longitude = address.longitude)
-                        weatherViewModel.sendCoordinates(location.latitude, location.longitude)
-                        // Guarda la ubicación en la base de datos
-                        saveLocationToDatabase(location)
+                        val location = LocationDatabaseVO(name = city, latitude = address.latitude, longitude = address.longitude)
+                        weatherViewModel.insertLocation(location)
 
-
-
-                        withContext(Dispatchers.Main) {
                             map.clear()
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
                             map.addMarker(MarkerOptions().position(latLng).title(city))
-                        }
 
-                        /*map.clear()
-
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
-                        map.addMarker(MarkerOptions().position(latLng).title(city))
-
-                         */
                     } else {
-                        println("bicación no encontrada")
-                        //Toast.makeText(this, "Ubicación no encontrada", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Ubicación no encontrada", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    println("Error al buscar la ubicación")
-                    //Toast.makeText(this, "Error al buscar la ubicación", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error al buscar la ubicación", Toast.LENGTH_SHORT).show()
                 }
-
-            }
         } else {
             // Búsqueda offline
-            CoroutineScope(Dispatchers.IO).launch {
-                val db = AppDatabase.getDatabase(this@MainActivity)
-                val location = db.locationDao().searchByName(city)
-                if (location != null) {
-                    val latLng = LatLng(location.latitude, location.longitude)
-
-                    withContext(Dispatchers.Main) {
-                        map.clear()
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
-                        map.addMarker(MarkerOptions().position(latLng).title(location.name))
-                    }
-                } else {
-                    println("Ubicación no encontrada en caché")
-                }
-            }
+            weatherViewModel.searchLocationByName(city)
         }
 
     }
