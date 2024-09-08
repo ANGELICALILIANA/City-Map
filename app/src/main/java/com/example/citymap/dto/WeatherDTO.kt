@@ -1,4 +1,4 @@
-package com.example.citymap.DTO
+package com.example.citymap.dto
 
 import com.google.gson.annotations.SerializedName
 

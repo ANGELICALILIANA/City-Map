@@ -1,9 +1,9 @@
-package com.example.citymap.Mappers
+package com.example.citymap.mappers
 
-import com.example.citymap.DTO.LocationDTO
-import com.example.citymap.VO.CurrentVO
-import com.example.citymap.VO.LocationVO
-import com.example.citymap.VO.WeatherVO
+import com.example.citymap.dto.LocationDTO
+import com.example.citymap.vo.CurrentVO
+import com.example.citymap.vo.LocationVO
+import com.example.citymap.vo.WeatherVO
 import com.example.citymap.database.entity.LocationEntity
 
 object LocationMapper {

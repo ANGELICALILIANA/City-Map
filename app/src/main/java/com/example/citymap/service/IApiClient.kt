@@ -1,9 +1,7 @@
-package com.example.citymap
+package com.example.citymap.service
 
-import com.example.citymap.DTO.CoordinateDTO
-import com.example.citymap.DTO.LocationDTO
-import com.example.citymap.DTO.WeatherDTO
-import com.example.citymap.VO.LocationVO
+import com.example.citymap.dto.LocationDTO
+import com.example.citymap.utils.Constants
 import retrofit2.http.GET
 import retrofit2.http.Query
 

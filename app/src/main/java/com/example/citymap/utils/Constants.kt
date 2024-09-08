@@ -1,4 +1,4 @@
-package com.example.citymap
+package com.example.citymap.utils
 
 object Constants {
 

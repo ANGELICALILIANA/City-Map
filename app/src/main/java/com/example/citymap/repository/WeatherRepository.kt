@@ -1,16 +1,15 @@
-package com.example.citymap.Repository
+package com.example.citymap.repository
 
-import com.example.citymap.IApiClient
-import com.example.citymap.IWeatherRepository
-import com.example.citymap.Mappers.LocationMapper
-import com.example.citymap.VO.LocationVO
+import com.example.citymap.service.IApiClient
+import com.example.citymap.mappers.LocationMapper
+import com.example.citymap.vo.LocationVO
 import com.example.citymap.database.AppDatabase
 import javax.inject.Inject
 
 class WeatherRepository @Inject constructor(
     private val apiClient : IApiClient,
     private val dataBase : AppDatabase,
-): IWeatherRepository{
+): IWeatherRepository {
 
     override suspend fun getDataWeather() {
         TODO("Not yet implemented")

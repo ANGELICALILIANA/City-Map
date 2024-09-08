@@ -2,10 +2,10 @@ package com.example.citymap.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.citymap.Constants
-import com.example.citymap.IApiClient
-import com.example.citymap.IWeatherRepository
-import com.example.citymap.Repository.WeatherRepository
+import com.example.citymap.utils.Constants
+import com.example.citymap.service.IApiClient
+import com.example.citymap.repository.IWeatherRepository
+import com.example.citymap.repository.WeatherRepository
 import com.example.citymap.database.AppDatabase
 import dagger.Module
 import dagger.Provides

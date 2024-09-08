@@ -1,4 +1,4 @@
-package com.example.citymap
+package com.example.citymap.adapter
 
 import android.content.Context
 import android.util.Log

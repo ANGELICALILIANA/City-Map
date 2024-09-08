@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:padding="@dimen/general_margin"
     android:background="@color/primary_transparent_30"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"

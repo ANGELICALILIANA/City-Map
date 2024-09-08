@@ -1,6 +1,6 @@
-package com.example.citymap
+package com.example.citymap.repository
 
-import com.example.citymap.VO.LocationVO
+import com.example.citymap.vo.LocationVO
 
 interface IWeatherRepository {
 

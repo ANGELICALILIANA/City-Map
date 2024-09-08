@@ -1,4 +1,4 @@
-package com.example.citymap
+package com.example.citymap.activity
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -17,8 +17,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import com.example.citymap.VO.LocationVO
-import com.example.citymap.ViewModel.WeatherViewModel
+import com.example.citymap.adapter.MarkerDataAdapter
+import com.example.citymap.adapter.PlaceAutocompleteAdapter
+import com.example.citymap.R
+import com.example.citymap.vo.LocationVO
+import com.example.citymap.viewModel.WeatherViewModel
 import com.example.citymap.databinding.EntityItemBinding
 import com.example.citymap.databinding.WeatherLayoutBinding
 import com.google.android.gms.maps.CameraUpdateFactory

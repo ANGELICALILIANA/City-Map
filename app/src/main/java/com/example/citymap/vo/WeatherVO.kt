@@ -1,4 +1,4 @@
-package com.example.citymap.VO
+package com.example.citymap.vo
 
 data class LocationVO(
     var latitude : Double = 0.0,

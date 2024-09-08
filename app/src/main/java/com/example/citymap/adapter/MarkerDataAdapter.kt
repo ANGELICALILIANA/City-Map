@@ -1,11 +1,12 @@
-package com.example.citymap
+package com.example.citymap.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.citymap.VO.LocationVO
+import com.example.citymap.R
+import com.example.citymap.vo.LocationVO
 
 class MarkerDataAdapter(private val locationVO: LocationVO) : RecyclerView.Adapter<MarkerDataAdapter.MarkerViewHolder>() {
 

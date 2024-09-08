@@ -1,11 +1,11 @@
-package com.example.citymap.ViewModel
+package com.example.citymap.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.citymap.IWeatherRepository
-import com.example.citymap.VO.LocationVO
+import com.example.citymap.repository.IWeatherRepository
+import com.example.citymap.vo.LocationVO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
