@@ -9,33 +9,30 @@ import android.os.Build
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.citymap.VO.LocationDatabaseVO
-import com.example.citymap.database.AppDatabase
-import com.example.citymap.database.entity.LocationEntity
 import com.example.citymap.ViewModel.WeatherViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.Locale
 
@@ -72,13 +69,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 runOnUiThread {
-                    toggleViews() // Cambia las vistas cuando la conexión está disponible
+                    toggleViews()
                 }
             }
 
             override fun onLost(network: Network) {
                 runOnUiThread {
-                    toggleViews() // Cambia las vistas cuando se pierde la conexión
+                    toggleViews()
                 }
             }
         }
@@ -97,9 +94,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val location = it
             if (location != null) {
                 val latLng = LatLng(location.latitude, location.longitude)
-                    map.clear()
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
-                    map.addMarker(MarkerOptions().position(latLng).title(location.name))
+                map.clear()
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
+                map.addMarker(MarkerOptions().position(latLng).title(location.name))
 
             } else {
                 Toast.makeText(this, "Ubicación no encontrada en caché", Toast.LENGTH_SHORT).show()
@@ -144,27 +141,32 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun searchLocation(city: String) {
         if (isInternetAvailable()) {
             val geocoder = Geocoder(this, Locale.getDefault())
-                try {
-                    val addressList = geocoder.getFromLocationName(city, 1)
-                    if (addressList != null && addressList.isNotEmpty()) {
-                        val address = addressList[0]
-                        val latLng = LatLng(address.latitude, address.longitude)
+            try {
+                val addressList = geocoder.getFromLocationName(city, 1)
+                if (addressList != null && addressList.isNotEmpty()) {
+                    val address = addressList[0]
+                    val latLng = LatLng(address.latitude, address.longitude)
 
-                        val location = LocationDatabaseVO(name = city, latitude = address.latitude, longitude = address.longitude)
-                        weatherViewModel.sendCoordinates(location.latitude, location.longitude)
-                        weatherViewModel.insertLocation(location)
+                        weatherViewModel.sendCoordinates(address.latitude, address.longitude)
 
-                            map.clear()
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
-                            map.addMarker(MarkerOptions().position(latLng).title(city))
+                        val location = LocationDatabaseVO(
+                        name = city,
+                        latitude = address.latitude,
+                        longitude = address.longitude
+                    )
+                    weatherViewModel.insertLocation(location)
 
-                    } else {
-                        Toast.makeText(this, "Ubicación no encontrada", Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    Toast.makeText(this, "Error al buscar la ubicación", Toast.LENGTH_SHORT).show()
+                    map.clear()
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
+                    map.addMarker(MarkerOptions().position(latLng).title(city))
+
+                } else {
+                    Toast.makeText(this, "Ubicación no encontrada", Toast.LENGTH_SHORT).show()
                 }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Toast.makeText(this, "Error al buscar la ubicación", Toast.LENGTH_SHORT).show()
+            }
         } else {
             // Búsqueda offline
             weatherViewModel.searchLocationByName(city)
@@ -183,12 +185,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
     }
 
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        // Se crea cuando el mapa ha sido cargado
-        map = googleMap
-    }
-
     private fun toggleViews() {
         if (isInternetAvailable()) {
             searchView.isVisible = false
@@ -200,7 +196,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun isInternetAvailable(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = connectivityManager.activeNetwork ?: return false
             val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
@@ -216,15 +213,36 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun showCustomDialog(marker: Marker) {
+        val dialogView = layoutInflater.inflate(R.layout.entity_item, null)
+        val titleTextView = dialogView.findViewById<TextView>(R.id.tittleTableTextView)
+        val recyclerView = dialogView.findViewById<RecyclerView>(R.id.tableRecyclerView)
 
-    private suspend fun saveLocationToDatabase(location: LocationEntity) {
-        val db = AppDatabase.getDatabase(this)
-        db.locationDao().insert(location)
+        titleTextView.text = marker.title
+
+        val layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = layoutManager
+        val adapter = MarkerDataAdapter(marker)
+        recyclerView.adapter = adapter
+
+        val builder = AlertDialog.Builder(this)
+        builder.setView(dialogView)
+        builder.setCancelable(true)
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+
+        map.setOnMarkerClickListener { marker ->
+            showCustomDialog(marker)
+            true
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Anular el registro del NetworkCallback para evitar fugas de memoria
         connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 

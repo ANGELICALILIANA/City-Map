@@ -1,3 +1,8 @@
 <resources>
+
     <string name="app_name">City Map</string>
+    <string name="date_1">DATE_1</string>
+    <string name="date_2">DATE_2</string>
+    <string name="search_city">Buscar ciudad</string>
+
 </resources>
