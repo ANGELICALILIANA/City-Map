@@ -12,7 +12,7 @@ class WeatherRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun sendDataWeather(latitude: Float, longitude: Float) {
+    override suspend fun sendDataWeather(latitude: Double, longitude: Double) {
         //apiClient.getData(latitude, longitude)
     }
 
