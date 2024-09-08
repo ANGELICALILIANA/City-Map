@@ -94,12 +94,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 map.addMarker(MarkerOptions().position(latLng).title(location.name))
 
             } else {
-                Toast.makeText(this, "Ubicación no encontrada en caché", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, resources.getText(R.string.location_no_found), Toast.LENGTH_SHORT).show()
             }
         })
 
         weatherViewModel.weather.observe(this, Observer {
             location = it
+            if (it?.current == null){
+                Toast.makeText(this, resources.getText(R.string.data_no_available), Toast.LENGTH_SHORT).show()
+            }
         })
     }
 
@@ -156,11 +159,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     animateCamera(latLng)
 
                 } else {
-                    Toast.makeText(this, "Ubicación no encontrada", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, resources.getText(R.string.location_no), Toast.LENGTH_SHORT).show()
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
-                Toast.makeText(this, "Error al buscar la ubicación", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, resources.getText(R.string.location_error), Toast.LENGTH_SHORT).show()
             }
         } else {
             weatherViewModel.searchLocationByName(city)

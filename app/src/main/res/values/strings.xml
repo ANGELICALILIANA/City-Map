@@ -5,5 +5,9 @@
     <string name="date_2">DATE_2</string>
     <string name="search_city">Buscar ciudad</string>
     <string name="close">Cerrar</string>
+    <string name="data_no_available">Datos de ubicación no disponibles</string>
+    <string name="location_no_found">Ubicación no encontrada en caché</string>
+    <string name="location_no">Ubicación no encontrada</string>
+    <string name="location_error">Error al buscar la ubicación</string>
 
 </resources>
