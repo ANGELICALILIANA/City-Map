@@ -3,5 +3,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#795548</color>
+    <color name="primary_transparent_70">#B3795548</color>
+    <color name="primary_transparent_10">#1A795548</color>
+    <color name="primary_transparent_30">#4D795548</color>
+    <color name="primary_transparent_50">#80795548</color>
 
 </resources>
