@@ -8,20 +8,17 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
-import android.widget.AutoCompleteTextView
-import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.citymap.VO.LocationDatabaseVO
 import com.example.citymap.ViewModel.WeatherViewModel
+import com.example.citymap.databinding.EntityItemBinding
+import com.example.citymap.databinding.WeatherLayoutBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -40,25 +37,22 @@ import java.util.Locale
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
-    private lateinit var searchView: SearchView
     private lateinit var placesClient: PlacesClient
-    private lateinit var autoCompleteTextView: AutoCompleteTextView
     private var isOptionSelected = false
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val weatherViewModel by viewModels<WeatherViewModel>()
+    private lateinit var binding: WeatherLayoutBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.weather_layout)
+
+        binding = WeatherLayoutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Inicializa la API de Places
         Places.initialize(applicationContext, getString(R.string.google_maps_api_key))
         placesClient = Places.createClient(this)
-
-        searchView = findViewById(R.id.searchView)
-        autoCompleteTextView = findViewById(R.id.autoCompleteTextView)
 
         // Verificar si el dispositivo está conectado a internet
         toggleViews()
@@ -107,17 +101,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun setupAutoComplete() {
         val token = AutocompleteSessionToken.newInstance()
         val adapter = PlaceAutocompleteAdapter(this, placesClient, token)
-        autoCompleteTextView.setAdapter(adapter)
-        autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+        binding.autoCompleteTextView.setAdapter(adapter)
+        binding.autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
             val selectedItem = parent.getItemAtPosition(position) as String
             searchLocation(selectedItem)
             isOptionSelected = true
             hideKeyboard()
         }
 
-        autoCompleteTextView.setOnClickListener {
+        binding.autoCompleteTextView.setOnClickListener {
             if (isOptionSelected) {
-                autoCompleteTextView.text.clear()
+                binding.autoCompleteTextView.text.clear()
                 isOptionSelected = false
             }
         }
@@ -125,7 +119,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun setupSearchView() {
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let { searchLocation(it) }
                 return false
@@ -175,8 +169,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun createFragment() {
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
@@ -187,11 +180,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun toggleViews() {
         if (isInternetAvailable()) {
-            searchView.isVisible = false
-            autoCompleteTextView.isVisible = true
+            binding.searchView.isVisible = false
+            binding.autoCompleteTextView.isVisible = true
         } else {
-            searchView.isVisible = true
-            autoCompleteTextView.isVisible = false
+            binding.searchView.isVisible = true
+            binding.autoCompleteTextView.isVisible = false
         }
     }
 
@@ -214,17 +207,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun showCustomDialog(marker: Marker) {
-        val dialogView = layoutInflater.inflate(R.layout.entity_item, null)
-        val titleTextView = dialogView.findViewById<TextView>(R.id.tittleTableTextView)
-        val recyclerView = dialogView.findViewById<RecyclerView>(R.id.tableRecyclerView)
-
-        titleTextView.text = marker.title
-
-        val layoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = layoutManager
+        val binding = EntityItemBinding.inflate(layoutInflater)
+        val dialogView = binding.root
+        binding.tittleTableTextView.text = marker.title
         val adapter = MarkerDataAdapter(marker)
-        recyclerView.adapter = adapter
-
+        binding.tableRecyclerView.adapter = adapter
         val builder = AlertDialog.Builder(this)
         builder.setView(dialogView)
         builder.setCancelable(true)
