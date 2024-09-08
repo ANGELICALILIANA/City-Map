@@ -1,19 +1,17 @@
 package com.example.citymap.Repository
 
-import com.example.citymap.Mapper
 import com.example.citymap.VO.LocationVO
-import com.example.citymap.VO.WeatherVO
 import com.example.citymap.database.AppDatabase
 import com.example.citymap.IApiClient
 import com.example.citymap.IWeatherRepository
+import com.example.citymap.Mappers.LocationMapper
 import com.example.citymap.Mappers.LocationMapper.entityToVO
 import com.example.citymap.Mappers.LocationMapper.voToEntity
 import com.example.citymap.VO.LocationDatabaseVO
-import com.example.citymap.database.entity.LocationEntity
 import javax.inject.Inject
 
 class WeatherRepository @Inject constructor(
-    //private val apiClient : IApiClient,
+    private val apiClient : IApiClient,
     private val dataBase : AppDatabase,
 ): IWeatherRepository{
 
@@ -25,7 +23,7 @@ class WeatherRepository @Inject constructor(
         val response = apiClient.getData(latitude, longitude)
         if (response.isSuccessful) {
             if (response.body() != null) {
-                return Mapper().locationVO(response.body()!!)
+                return LocationMapper.locationVoToDto(response.body()!!)
             } else {
                 return LocationVO()
             }

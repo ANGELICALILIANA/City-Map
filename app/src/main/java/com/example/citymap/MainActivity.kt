@@ -151,6 +151,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         val latLng = LatLng(address.latitude, address.longitude)
 
                         val location = LocationDatabaseVO(name = city, latitude = address.latitude, longitude = address.longitude)
+                        weatherViewModel.sendCoordinates(location.latitude, location.longitude)
                         weatherViewModel.insertLocation(location)
 
                             map.clear()
