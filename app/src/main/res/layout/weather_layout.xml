@@ -5,27 +5,31 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/general_margin"
+    android:padding="@dimen/general_margin"
+    android:background="@color/primary_transparent_30"
     tools:context=".MainActivity">
 
-    <!-- SearchView para búsqueda de ciudad -->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/general_margin"
+        android:layout_height="@dimen/general_height"
+        android:layout_margin="@dimen/separation"
         android:visibility="gone"
+        android:drawableStart="@drawable/baseline_add_location_24"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:queryHint="@string/search_city" />
+        android:queryHint="@string/search_city"
+        android:background="@color/white"/>
 
-    <!-- SearchView para búsqueda de ciudad -->
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/general_height"
+        android:layout_margin="@dimen/separation"
+        android:background="@color/white"
         android:hint="@string/search_city"
+        android:drawableStart="@drawable/baseline_add_location_24"
         app:layout_constraintBottom_toTopOf="@+id/map"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
