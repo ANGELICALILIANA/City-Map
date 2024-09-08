@@ -4,7 +4,6 @@
     android:id="@+id/requestCardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/margin_card_view"
     android:paddingBottom="@dimen/separation"
     app:cardCornerRadius="@dimen/margin_card_view"
     app:layout_constraintEnd_toEndOf="parent"
@@ -24,14 +23,14 @@
             android:id="@+id/headerConstraintLayout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_header_table"
-            android:background="@color/quantum_yellow"
+            android:background="@color/quantum_brown"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/iconHeaderImageView"
-                style="@style/header_icon"
+                style="@style/header_icon_right"
                 android:src="@drawable/ic_launcher_foreground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -41,9 +40,23 @@
             <TextView
                 android:id="@+id/tittleTableTextView"
                 style="@style/header_table"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:maxWidth="@dimen/max_width"
+                android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/iconHeaderImageView"
+                app:layout_constraintEnd_toStartOf="@+id/closeButton"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/closeButton"
+                style="@style/header_icon_left"
+                android:src="@drawable/baseline_close_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/white" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

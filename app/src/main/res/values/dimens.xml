@@ -2,10 +2,11 @@
 
     <dimen name="general_margin">15dp</dimen>
     <dimen name="radius">10dp</dimen>
-    <dimen name="stroke">1dp</dimen>
+    <dimen name="stroke">4dp</dimen>
     <dimen name="height_header">150dp</dimen>
     <dimen name="separation">5dp</dimen>
     <dimen name="margin_card_view">10dp</dimen>
     <dimen name="height_header_table">40dp</dimen>
+    <dimen name="max_width">200dp</dimen>
 
 </resources>

@@ -208,12 +208,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val binding = EntityItemBinding.inflate(layoutInflater)
         val dialogView = binding.root
         binding.tittleTableTextView.text = marker.title
+
         val adapter = location?.let { MarkerDataAdapter(it) }
         binding.tableRecyclerView.adapter = adapter
+
         val builder = AlertDialog.Builder(this)
         builder.setView(dialogView)
         builder.setCancelable(true)
         val dialog = builder.create()
+
+        binding.closeButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
         dialog.show()
     }
 
