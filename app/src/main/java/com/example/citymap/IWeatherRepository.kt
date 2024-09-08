@@ -1,9 +1,11 @@
 package com.example.citymap
 
+import com.example.citymap.VO.LocationVO
+
 interface IWeatherRepository {
 
     suspend fun getDataWeather()
 
-    suspend fun sendDataWeather(latitude: Double, longitude: Double)
+    suspend fun sendDataWeather(latitude: Double, longitude: Double): LocationVO?
 
 }
