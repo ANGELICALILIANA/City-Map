@@ -16,7 +16,7 @@ class WeatherViewModel @Inject constructor(
     private val weather = MutableLiveData<LocationVO>()
     fun getLocation(): LiveData<LocationVO> = weather
 
-    private suspend fun sendCoordinates(latitude: Float = 4F, longitude: Float = 12F) {
+    suspend fun sendCoordinates(latitude: Double, longitude: Double) {
         weatherRepository.sendDataWeather(latitude, longitude)
     }
 
