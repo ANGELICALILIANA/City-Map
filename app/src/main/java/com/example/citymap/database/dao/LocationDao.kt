@@ -13,4 +13,7 @@ interface LocationDao {
 
     @Query("SELECT * FROM locations WHERE name LIKE '%' || :query || '%' LIMIT 1")
     suspend fun searchByName(query: String): LocationEntity?
+
+    @Query("SELECT * FROM locations WHERE name = :name")
+    suspend fun getLocationByName(name: String): LocationEntity?
 }
