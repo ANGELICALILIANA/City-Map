@@ -208,6 +208,29 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val binding = EntityItemBinding.inflate(layoutInflater)
         val dialogView = binding.root
         binding.tittleTableTextView.text = marker.title
+        val image = location?.current?.weather?.first()?.iconWeather
+        var setImage = R.drawable.ic_launcher_foreground
+        when(image){
+            "01d" -> setImage = R.drawable.d01
+            "02d" -> setImage = R.drawable.d02
+            "03d" -> setImage = R.drawable.d03
+            "04d" -> setImage = R.drawable.d04
+            "09d" -> setImage = R.drawable.d09
+            "10d" -> setImage = R.drawable.d10
+            "11d" -> setImage = R.drawable.d11
+            "13d" -> setImage = R.drawable.d13
+            "50d" -> setImage = R.drawable.d50
+            "01n" -> setImage = R.drawable.n01
+            "02n" -> setImage = R.drawable.n02
+            "03n" -> setImage = R.drawable.n03
+            "04n" -> setImage = R.drawable.n04
+            "09n" -> setImage = R.drawable.n09
+            "10n" -> setImage = R.drawable.n10
+            "11n" -> setImage = R.drawable.n11
+            "13n" -> setImage = R.drawable.n13
+            "50n" -> setImage = R.drawable.n50
+        }
+        binding.iconHeaderImageView.setImageResource(setImage)
         val adapter = location?.let { MarkerDataAdapter(it) }
         binding.tableRecyclerView.adapter = adapter
         val builder = AlertDialog.Builder(this)
