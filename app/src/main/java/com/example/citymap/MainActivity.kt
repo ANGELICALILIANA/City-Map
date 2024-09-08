@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val weatherViewModel by viewModels<WeatherViewModel>()
+    private var location: LocationVO? = null
     private lateinit var binding: WeatherLayoutBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,6 +86,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun initObservers() {
         weatherViewModel.locationDatabaseVO.observe(this, Observer {
+            location = it
             val location = it
             if (location != null) {
                 val latLng = LatLng(location.latitude, location.longitude)
@@ -95,6 +97,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             } else {
                 Toast.makeText(this, "Ubicación no encontrada en caché", Toast.LENGTH_SHORT).show()
             }
+        })
+
+        weatherViewModel.weather.observe(this, Observer {
+            location = it
         })
     }
 
@@ -141,14 +147,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     val address = addressList[0]
                     val latLng = LatLng(address.latitude, address.longitude)
 
-                        weatherViewModel.sendCoordinates(address.latitude, address.longitude)
-
-                        val location = LocationDatabaseVO(
-                        name = city,
-                        latitude = address.latitude,
-                        longitude = address.longitude
-                    )
-                    weatherViewModel.insertLocation(location)
+                    weatherViewModel.sendCoordinates(address.latitude, address.longitude, city)
 
                     map.clear()
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
@@ -210,7 +209,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val binding = EntityItemBinding.inflate(layoutInflater)
         val dialogView = binding.root
         binding.tittleTableTextView.text = marker.title
-        val adapter = MarkerDataAdapter(marker)
+        val adapter = location?.let { MarkerDataAdapter(it) }
         binding.tableRecyclerView.adapter = adapter
         val builder = AlertDialog.Builder(this)
         builder.setView(dialogView)

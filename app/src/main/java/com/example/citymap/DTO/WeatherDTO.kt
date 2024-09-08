@@ -3,8 +3,8 @@ package com.example.citymap.DTO
 import com.google.gson.annotations.SerializedName
 
 data class LocationDTO(
-    @SerializedName("lat") var latitude : Float,
-    @SerializedName("lon") var longitude : Float,
+    @SerializedName("lat") var latitude : Double,
+    @SerializedName("lon") var longitude : Double,
     @SerializedName("timezone") var timezone : String,
     @SerializedName("timezone_offset") var timezoneOffset : Int,
     @SerializedName("current") var current : CurrentDTO

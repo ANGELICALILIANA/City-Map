@@ -4,9 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.citymap.VO.LocationVO
 import com.example.citymap.IWeatherRepository
-import com.example.citymap.VO.LocationDatabaseVO
+import com.example.citymap.VO.LocationVO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,28 +15,17 @@ class WeatherViewModel @Inject constructor(
     private val weatherRepository: IWeatherRepository
 ): ViewModel() {
 
-    private val weather = MutableLiveData<LocationVO>()
-    fun getLocation(): LiveData<LocationVO> = weather
+    private val _weather = MutableLiveData<LocationVO>()
+    private val _locationDatabaseVO = MutableLiveData<LocationVO>()
 
-    private val _locationDatabaseVO = MutableLiveData<LocationDatabaseVO>()
-
-    val locationDatabaseVO: LiveData<LocationDatabaseVO>
+    val weather: LiveData<LocationVO>
+        get() = _weather
+    val locationDatabaseVO: LiveData<LocationVO>
         get() = _locationDatabaseVO
 
-    fun sendCoordinates(latitude: Double, longitude: Double) {
+    fun sendCoordinates(latitude: Double, longitude: Double, name: String) {
         viewModelScope.launch {
-            weatherRepository.sendDataWeather(latitude, longitude)
-        }
-    }
-
-    private fun getWeather() {
-
-    }
-
-
-    fun insertLocation(locationEntity: LocationDatabaseVO) {
-        viewModelScope.launch {
-            weatherRepository.insertLocation(locationEntity)
+            _weather.postValue(weatherRepository.sendDataWeather(latitude, longitude, name))
         }
     }
 
