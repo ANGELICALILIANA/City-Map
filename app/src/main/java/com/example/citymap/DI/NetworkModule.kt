@@ -1,12 +1,16 @@
 package com.example.interrapidisimo.di
 
+import android.content.Context
+import androidx.room.Room
 import com.example.citymap.Constants
 import com.example.citymap.IApiClient
 import com.example.citymap.IWeatherRepository
 import com.example.citymap.Repository.WeatherRepository
+import com.example.citymap.database.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -31,22 +35,20 @@ object NetworkModule {
         return retrofit.create(IApiClient::class.java)
     }
 
-    /*@Singleton
-    @Provides
-    fun provideRoom(
-        @ApplicationContext context: Context
-    ): TablesDatabase {
-            return Room.databaseBuilder(
-                context,
-                TablesDatabase::class.java,
-                Constant.DATABASE_NAME
-            ).build()
-    }*/
-
     @Provides
     @Singleton
     fun provideRepository(repository: WeatherRepository): IWeatherRepository {
         return repository
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "app_database"
+        ).build()
     }
 
 

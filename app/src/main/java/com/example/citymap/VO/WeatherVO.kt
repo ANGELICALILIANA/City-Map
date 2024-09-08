@@ -36,7 +36,8 @@ data class WeatherVO(
     var iconWeather : String = ""
 )
 
-data class LatLongVO(
+data class LocationDatabaseVO(
     var latitude : Double = 0.0,
-    var longitude : Double = 0.0
+    var longitude : Double = 0.0,
+    var name : String = ""
 )
