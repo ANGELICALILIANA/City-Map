@@ -20,7 +20,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.citymap.VO.LocationDatabaseVO
+import com.example.citymap.VO.LocationVO
 import com.example.citymap.ViewModel.WeatherViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val weatherViewModel by viewModels<WeatherViewModel>()
+    private var location: LocationVO? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +92,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun initObservers() {
         weatherViewModel.locationDatabaseVO.observe(this, Observer {
+            location = it
             val location = it
             if (location != null) {
                 val latLng = LatLng(location.latitude, location.longitude)
@@ -101,6 +103,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             } else {
                 Toast.makeText(this, "Ubicación no encontrada en caché", Toast.LENGTH_SHORT).show()
             }
+        })
+
+        weatherViewModel.weather.observe(this, Observer {
+            location = it
         })
     }
 
@@ -147,14 +153,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     val address = addressList[0]
                     val latLng = LatLng(address.latitude, address.longitude)
 
-                        weatherViewModel.sendCoordinates(address.latitude, address.longitude)
-
-                        val location = LocationDatabaseVO(
-                        name = city,
-                        latitude = address.latitude,
-                        longitude = address.longitude
-                    )
-                    weatherViewModel.insertLocation(location)
+                    weatherViewModel.sendCoordinates(address.latitude, address.longitude, city)
 
                     map.clear()
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
@@ -222,7 +221,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
-        val adapter = MarkerDataAdapter(marker)
+        val adapter = location?.let { MarkerDataAdapter(it) }
         recyclerView.adapter = adapter
 
         val builder = AlertDialog.Builder(this)

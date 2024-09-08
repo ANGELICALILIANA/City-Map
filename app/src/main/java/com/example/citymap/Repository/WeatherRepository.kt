@@ -1,13 +1,10 @@
 package com.example.citymap.Repository
 
-import com.example.citymap.VO.LocationVO
-import com.example.citymap.database.AppDatabase
 import com.example.citymap.IApiClient
 import com.example.citymap.IWeatherRepository
 import com.example.citymap.Mappers.LocationMapper
-import com.example.citymap.Mappers.LocationMapper.entityToVO
-import com.example.citymap.Mappers.LocationMapper.voToEntity
-import com.example.citymap.VO.LocationDatabaseVO
+import com.example.citymap.VO.LocationVO
+import com.example.citymap.database.AppDatabase
 import javax.inject.Inject
 
 class WeatherRepository @Inject constructor(
@@ -19,11 +16,13 @@ class WeatherRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun sendDataWeather(latitude: Double, longitude: Double): LocationVO? {
+    override suspend fun sendDataWeather(latitude: Double, longitude: Double, name: String): LocationVO? {
         val response = apiClient.getData(latitude, longitude)
         if (response.isSuccessful) {
             if (response.body() != null) {
-                return LocationMapper.locationVoToDto(response.body()!!)
+                val locationVO = LocationMapper.locationVoToDto(response.body()!!)
+                insertLocation(locationVO, name)
+                return locationVO
             } else {
                 return LocationVO()
             }
@@ -32,14 +31,14 @@ class WeatherRepository @Inject constructor(
         }
     }
 
-    override suspend fun insertLocation(locationVO: LocationDatabaseVO) {
-        val locationEntity = voToEntity(locationVO)
+   suspend fun insertLocation(locationVO: LocationVO, name: String) {
+        val locationEntity = LocationMapper.locationVoToEntity(locationVO, name)
         dataBase.locationDao().insert(locationEntity)
     }
 
-    override suspend fun searchLocationByName(query: String): LocationDatabaseVO? {
+    override suspend fun searchLocationByName(query: String): LocationVO? {
         val locationEntity = dataBase.locationDao().searchByName(query)
-        return locationEntity?.let { entityToVO(it) }
+        return locationEntity?.let { LocationMapper.locationEntityToVO(it) }
     }
 
 }

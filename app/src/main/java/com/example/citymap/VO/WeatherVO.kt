@@ -1,14 +1,12 @@
 package com.example.citymap.VO
 
-import com.example.citymap.DTO.CurrentDTO
-import com.example.citymap.DTO.WeatherDTO
-
 data class LocationVO(
-    var latitude : Float = 0F,
-    var longitude : Float = 0F,
+    var latitude : Double = 0.0,
+    var longitude : Double = 0.0,
     var timezone : String = "",
     var timezoneOffset : Int = 0,
-    var current : CurrentDTO? = null
+    var current : CurrentVO? = null,
+    var name : String = ""
 )
 
 data class CurrentVO(
@@ -26,7 +24,7 @@ data class CurrentVO(
     var windSpeed : Float = 0F,
     var windDirection : Int = 0,
     var windGust : Float = 0F,
-    var weather : List<WeatherDTO>? = null
+    var weather : List<WeatherVO>? = null
 )
 
 data class WeatherVO(
@@ -34,10 +32,4 @@ data class WeatherVO(
     var mainWeather : String = "",
     var descriptionWeather : String = "",
     var iconWeather : String = ""
-)
-
-data class LocationDatabaseVO(
-    var latitude : Double = 0.0,
-    var longitude : Double = 0.0,
-    var name : String = ""
 )
