@@ -15,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import com.example.citymap.VO.LocationDatabaseVO
+import com.example.citymap.VO.LocationVO
 import com.example.citymap.ViewModel.WeatherViewModel
 import com.example.citymap.databinding.EntityItemBinding
 import com.example.citymap.databinding.WeatherLayoutBinding
