@@ -15,6 +15,8 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import com.example.citymap.database.AppDatabase
+import com.example.citymap.database.entity.LocationEntity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -155,7 +157,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         val address = addressList[0]
                         val latLng = LatLng(address.latitude, address.longitude)
 
-                        val location = Location(name = city, latitude = address.latitude, longitude = address.longitude)
+                        val location = LocationEntity(name = city, latitude = address.latitude, longitude = address.longitude)
                         // Guarda la ubicación en la base de datos
                         saveLocationToDatabase(location)
 
@@ -250,7 +252,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    private suspend fun saveLocationToDatabase(location: Location) {
+    private suspend fun saveLocationToDatabase(location: LocationEntity) {
         val db = AppDatabase.getDatabase(this)
         db.locationDao().insert(location)
     }
