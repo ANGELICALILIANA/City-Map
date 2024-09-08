@@ -233,10 +233,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.iconHeaderImageView.setImageResource(setImage)
         val adapter = location?.let { MarkerDataAdapter(it) }
         binding.tableRecyclerView.adapter = adapter
+
         val builder = AlertDialog.Builder(this)
         builder.setView(dialogView)
         builder.setCancelable(true)
         val dialog = builder.create()
+
+        binding.closeButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
         dialog.show()
     }
 
