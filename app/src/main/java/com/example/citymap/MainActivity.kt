@@ -1,5 +1,6 @@
 package com.example.citymap
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.location.Geocoder
 import android.net.ConnectivityManager
@@ -7,6 +8,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
+import android.view.animation.LinearInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.TextView
@@ -26,6 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -61,12 +64,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         searchView = findViewById(R.id.searchView)
         autoCompleteTextView = findViewById(R.id.autoCompleteTextView)
 
-        // Verificar si el dispositivo está conectado a internet
-        toggleViews()
-
-        // Escucha los cambios de conexión en tiempo real (opcional)
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        // Registrar el NetworkCallback para detectar cambios en la conexión
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 runOnUiThread {
@@ -82,6 +80,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         connectivityManager.registerDefaultNetworkCallback(networkCallback)
+        toggleViews()
 
         createFragment()
         setupSearchView()
@@ -156,8 +155,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     weatherViewModel.sendCoordinates(address.latitude, address.longitude, city)
 
                     map.clear()
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
-                    map.addMarker(MarkerOptions().position(latLng).title(city))
+                    val marker = map.addMarker(MarkerOptions().position(latLng).title(city))
+                    marker?.let {
+                        animateMarker(it, latLng)
+                    }
+                    animateCamera(latLng)
 
                 } else {
                     Toast.makeText(this, "Ubicación no encontrada", Toast.LENGTH_SHORT).show()
@@ -167,7 +169,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Toast.makeText(this, "Error al buscar la ubicación", Toast.LENGTH_SHORT).show()
             }
         } else {
-            // Búsqueda offline
             weatherViewModel.searchLocationByName(city)
         }
 
@@ -200,12 +201,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = connectivityManager.activeNetwork ?: return false
             val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
-            when {
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-                else -> false
-            }
+
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                    activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
         } else {
             val networkInfo = connectivityManager.activeNetworkInfo
             networkInfo != null && networkInfo.isConnected
@@ -229,6 +228,34 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         builder.setCancelable(true)
         val dialog = builder.create()
         dialog.show()
+    }
+
+    private fun animateMarker(marker: Marker, toPosition: LatLng) {
+        val startPosition = marker.position
+
+        val valueAnimator = ValueAnimator.ofFloat(0f, 1f)
+        valueAnimator.duration = 2500
+        valueAnimator.interpolator = LinearInterpolator()
+
+        valueAnimator.addUpdateListener { animation ->
+            val fraction = animation.animatedFraction
+            val newLatLng = LatLng(
+                startPosition.latitude + (toPosition.latitude - startPosition.latitude) * fraction,
+                startPosition.longitude + (toPosition.longitude - startPosition.longitude) * fraction
+            )
+            marker.position = newLatLng
+        }
+
+        valueAnimator.start()
+    }
+
+    private fun animateCamera(toPosition: LatLng, zoom: Float = 12f) {
+        val cameraPosition = CameraPosition.Builder()
+            .target(toPosition)
+            .zoom(zoom)
+            .build()
+
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
