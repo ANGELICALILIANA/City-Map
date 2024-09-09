@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: WeatherLayoutBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.SplashTheme)
         super.onCreate(savedInstanceState)
 
         binding = WeatherLayoutBinding.inflate(layoutInflater)

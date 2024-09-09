@@ -8,5 +8,9 @@
         <item name="android:navigationBarColor">@color/primary_transparent_50</item>
     </style>
 
+    <style name="SplashTheme" parent="Base.Theme.CityMap">
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+
     <style name="Theme.CityMap" parent="Base.Theme.CityMap" />
 </resources>
